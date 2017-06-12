@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
-from .models import Choice, Question
+from .models import Choice, Question, Candidate
 from django.template import loader
 from django.http import Http404
 from django.urls import reverse
+from polls.forms import ContactDetails
 
 # Create your views here.
 
@@ -37,4 +38,22 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+
+def contact(request):
+	if request.method == 'POST':
+		f = ContactDetails(request.POST)
+		if f.is_valid():
+			return HttpResponse("thanks")
+		
+	else:
+		f = ContactDetails()
+	#print (Candidate.objects.all())
+	#form_class= ContactDetails
+	return render(request, 'polls/contact.html', {'form' : f,})
+
+def get(self, request):
+	form = ContactDetails()
+	return render(request, 'polls/contact.html',{'form' : form})
+
+
 
