@@ -5,21 +5,35 @@ from django.template import loader
 from django.http import Http404
 from django.urls import reverse
 from polls.forms import ContactDetails
+from django.utils import timezone
+from django.views import generic
+from django.views.generic.edit import CreateView
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+import json
 
 # Create your views here.
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question_list'
 
-def index(request):
-    latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    context = {'latest_question_list': latest_question_list}
-    return render(request, 'polls/index.html', context)
+    def get_queryset(self):
+    	"""
+    	Return the last five published questions (not including those set to be
+    	published in the future).
+    	"""
+    	return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:5]
 
-def detail(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/detail.html', {'question': question})
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = 'polls/detail.html'
 
-def results(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/results.html', {'question': question})
+
+class ResultsView(generic.DetailView):
+    model = Question
+    template_name = 'polls/results.html'
+
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
@@ -40,20 +54,38 @@ def vote(request, question_id):
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 
 def contact(request):
-	if request.method == 'POST':
-		f = ContactDetails(request.POST)
-		if f.is_valid():
-			return HttpResponse("Entry Saved !!")
-		
-	else:
-		f = ContactDetails()
-	#print (Candidate.objects.all())
-	#form_class= ContactDetails
-	return render(request, 'polls/contact.html', {'form' : f,})
 
-def get(self, request):
-	form = ContactDetails()
-	return render(request, 'polls/contact.html',{'form' : form})
+    if request.method == 'POST':
+        f = ContactDetails(request.POST)
+        if f.is_valid():
+            c = Candidate(name = request.POST["contact_name"])
+            c.save()
+            return HttpResponse("Entry Saved !!")	 
+    else:   
+        f = ContactDetails()  
+    return render(request, 'polls/contact.html', {'form' : f})
+#def get(self, request):
+#	form = ContactDetails()
+#	return render(request, 'polls/contact.html',{'form' : form})
+
+      #  data = Candidate.objects.all()
+      
+def todo(request):
+    if request.is_ajax():
+        JsonObj = ["vansh", "shrey", "shru",]
+        data = json.dumps(JsonObj)
+        return HttpResponse(data, content_type='application/json')
+    else:
+        raise Http404
+
+def more(request):
+    if request.is_ajax():
+        a = Candidate.objects.values()
+        b = list(a)
+        data = json.dumps(b)
+        return HttpResponse(data, content_type= 'application/json')
+    else:
+        raise Http404
 
 
 

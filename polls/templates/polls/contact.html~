@@ -5,7 +5,7 @@
      <p>User Details:</p>
      <form role="form" action="" method="post">
           {% csrf_token %}
-          {{ form }}
+          {{ form.as_p }}
            <button type="submit">Submit</button>
      </form>
 </body>

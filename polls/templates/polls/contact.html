@@ -1,13 +1,53 @@
 <html>
 <head>
   <title>Details</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
 <body>
      <p>User Details:</p>
-     <form role="form" action="" method="post">
+     <form id="demo" role="form" action="" method="POST">
           {% csrf_token %}
-          {{ form.as_p }}
-           <button type="submit">Submit</button>
-     </form>
+          {{ form }} <br></br>
+           <button id="b1" type="submit">Submit</button>
+           
+     </form> 
+	 <button id="b2">List</button>
+ 	 <div id='abc'></div>
+	 <table id="t1">
+	 	<tr>
+	 	<th> name </th>
+	 	</tr> 
+
+
+<script>
+ 
+ /*  $("#b2").click(function(){
+    	$.ajax({
+    		url: "http://127.0.0.1:8000/polls/ajax/more/",
+    		type: "GET",
+    		success: function(data) {
+    			for(i=0; i < data.length; i++){
+    				//document.write(data[i]);
+    				$("p").append(data[i]);
+    			}
+    		}    	
+    	});
+    });
+*/
+   $("#b2").click(function(){
+   		$.ajax({
+   			url: "http://127.0.0.1:8000/polls/ajax/display/",
+   			type: "GET",
+   			success: function(data) {
+   				 for(i=0; i < data.length; i++){
+   				 	$("#t1").append("<tr><td>"+data[i].name+"</td></tr>");
+   				 	console.log(data[i].name);
+   				}
+
+   			}
+   		})
+   }) 
+</script> 	 
 </body>
-</head>
 </html>
+
